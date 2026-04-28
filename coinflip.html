@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Coin Flip</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-size: 24px; }
+        button { font-size: 24px; padding: 15px 30px; }
+        input { font-size: 24px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>🪙 Coin Flip 🪙</h1>
+    <p id="result"></p>
+    <p id="balance"></p>
+
+    <div id="start-screen">
+        <input id="balance-entry" type="number" placeholder="Enter balance...">
+        <button onclick="startGame()">Start Game</button>
+    </div>
+
+    <div id="game-screen" style="display:none">
+        <input id="bet-entry" type="number" placeholder="Enter bet...">
+        <button onclick="flip('heads')">Heads</button>
+        <button onclick="flip('tails')">Tails</button>
+    </div>
+
+    <div id="retry-screen" style="display:none">
+        <button onclick="retry()">Retry</button>
+    </div>
+
+    <button onclick="window.location.href='index.html'">Back to Casino</button>
+
+    <script>
+        let balance = 0;
+
+        function startGame() {
+            balance = parseInt(document.getElementById("balance-entry").value);
+            if (isNaN(balance)) {
+                document.getElementById("result").innerText = "Enter a valid number!";
+                return;
+            }
+            document.getElementById("start-screen").style.display = "none";
+            document.getElementById("game-screen").style.display = "block";
+            document.getElementById("balance").innerText = "Balance: $" + balance;
+        }
+
+        function flip(choice) {
+            let bet = parseInt(document.getElementById("bet-entry").value);
+            if (isNaN(bet)) {
+                document.getElementById("result").innerText = "Enter a valid bet!";
+                return;
+            }
+            if (bet > balance) {
+                document.getElementById("result").innerText = "Not enough money!";
+                return;
+            }
+            if (bet < 1) {
+                document.getElementById("result").innerText = "Bet at least $1!";
+                return;
+            }
+
+            balance -= bet;
+            let outcome = Math.random() < 0.5 ? "heads" : "tails";
+
+            if (outcome === choice) {
+                balance += bet * 1.5;
+                document.getElementById("result").innerText = "🪙 " + outcome + "! You won $" + bet + "!";
+            } else {
+                document.getElementById("result").innerText = "🪙 " + outcome + "! You lost.";
+            }
+
+            document.getElementById("balance").innerText = "Balance: $" + balance;
+
+            if (balance <= 0) {
+                setTimeout(() => {
+                    document.getElementById("result").innerText = "Game over! You're broke.";
+                    document.getElementById("game-screen").style.display = "none";
+                    document.getElementById("retry-screen").style.display = "block";
+                }, 2000);
+            }
+        }
+
+        function retry() {
+            balance = 0;
+            document.getElementById("result").innerText = "";
+            document.getElementById("balance").innerText = "";
+            document.getElementById("balance-entry").value = "";
+            document.getElementById("bet-entry").value = "";
+            document.getElementById("retry-screen").style.display = "none";
+            document.getElementById("game-screen").style.display = "none";
+            document.getElementById("start-screen").style.display = "block";
+        }
+    </script>
+</body>
+</html>
